@@ -80,15 +80,13 @@ class AweberConfirmationSubscriptionCallbackView(
         try:
             form_data = self.request.session['aweber_subscription_form_data']
         except:
-            form_data = {}
-        
-        if form_data:            
-            context['full_name'] = form_data.get('full_name', '')
-            context['email'] = form_data.get('email', '')
-            context['segment'] = form_data.get('segment', '')
-            del self.request.session['aweber_subscription_form_data']
-        else:
             raise Http404
+        
+        context['full_name'] = form_data.get('full_name', '')
+        context['email'] = form_data.get('email', '')
+        context['segment'] = form_data.get('segment', '')
+        del self.request.session['aweber_subscription_form_data']
+
         return context
 
 
@@ -96,7 +94,7 @@ class AweberConfirmationResubscriptionCallbackView(
     TemplateView
     ):
     """ The user resubscription request sent, we were called back """
-    template_name = "aweber/aweber_subscription_reconfirmation_callback_view.html"
+    template_name = "aweber/aweber_subscription_confirmation_callback_view.html"
     extra_context = {}
 
     def get_context_data(self, **kwargs):
@@ -105,15 +103,13 @@ class AweberConfirmationResubscriptionCallbackView(
         try:
             form_data = self.request.session['aweber_subscription_form_data']
         except:
-            form_data = {}
-
-        if form_data:
-            context['full_name'] = form_data.get('full_name', '')
-            context['email'] = form_data.get('email', '')
-            context['segment'] = form_data.get('segment', '')
-            self.request.session['aweber_subscription_form_data'] = None
-        else:
             raise Http404
+    
+        context['full_name'] = form_data.get('full_name', '')
+        context['email'] = form_data.get('email', '')
+        context['segment'] = form_data.get('segment', '')
+        del self.request.session['aweber_subscription_form_data']
+
         return context
 
 

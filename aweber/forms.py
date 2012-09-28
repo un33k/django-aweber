@@ -60,7 +60,7 @@ class AweberSignupEmailFormMixin(forms.Form):
                 label = _("Email"),
                 max_length = 75,
                 required = True,
-                help_text = _("Please user a valid email address")
+                help_text = _("Please use a valid email address and avoid typos")
     )
 
     def clean_email1(self):
@@ -139,7 +139,8 @@ class AweberFormWithSegmentMixin(forms.Form):
 
     if defaults.AWEBER_LIST_SEGMENT == []:
         raise ImproperlyConfigured('AWEBER_LIST_SEGMENT is missing from your project settings')
-            
+    
+    defaults.AWEBER_LIST_SEGMENT.insert(0, ('', '------------'))
     segment = forms.ChoiceField(
                 label = _('Account Type'), 
                 choices = defaults.AWEBER_LIST_SEGMENT,
