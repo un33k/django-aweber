@@ -15,14 +15,13 @@ class AweberSignupPasswordFormMixin(forms.Form):
                 widget = forms.PasswordInput,
                 required = True,
                 max_length = 75,
-                help_text = _("Please choose a strong password")
+                help_text = _("Please choose a strong password. (minimum of %d characters)" % defaults.AWEBER_PASSWORD_MINIMUM_LENGHT)
     )
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1', '')
-        min_len = getattr(defaults, "AWEBER_PASSWORD_MINIMUM_LENGHT", 6)
-        if len(password1) < min_len:
-            raise forms.ValidationError(_("Password too short! minimum length is ")+" [%d]" % min_len)
+        if len(password1) < defaults.AWEBER_PASSWORD_MINIMUM_LENGHT:
+            raise forms.ValidationError(_("Password too short! minimum length is ")+" [%d]" % defaults.AWEBER_PASSWORD_MINIMUM_LENGHT)
 
         return password1
 
@@ -67,7 +66,7 @@ class AweberSignupEmailFormMixin(forms.Form):
     def clean_email1(self):
         """ Email should be unique """
         email1 = self.cleaned_data.get('email1', '').lower()
-        verify = getattr(defaults, 'AWEBER_VERIFY_IF_EMAIL_EXISTS', False)
+        verify = defaults.AWEBER_VERIFY_IF_EMAIL_EXISTS
         if verify:
             try:
                 from emailahoy import verify_email_address
@@ -138,18 +137,20 @@ class AweberSignupFullNameFormMixin(forms.Form):
 
 class AweberFormWithSegmentMixin(forms.Form):
 
-    try:
-        AWEBER_LIST_SEGMENT = getattr(defaults, 'AWEBER_LIST_SEGMENT')
-    except AttributeError:
+    if defaults.AWEBER_LIST_SEGMENT == []:
         raise ImproperlyConfigured('AWEBER_LIST_SEGMENT is missing from your project settings')
             
     segment = forms.ChoiceField(
-                label = _('List Segment'), 
-                choices = AWEBER_LIST_SEGMENT,
+                label = _('Account Type'), 
+                choices = defaults.AWEBER_LIST_SEGMENT,
                 required = True,
                 help_text = _("Please choose with care, as you cannot change this later!")
     )
 
+    def clean_segment(self):
+        segment = self.cleaned_data.get('segment', [])
+        return segment
+        
 
 class AweberSignupFullNameEmailForm(AweberSignupFullNameFormMixin, AweberSignupEmailFormMixin):
     """ Ask the user for email and full name """
@@ -172,20 +173,39 @@ class AweberSignupFullNameEmailPasswordForm(AweberSignupFullNameEmailForm, Awebe
         ]
 
 
+class AweberSignupFullNameEmailConfirmedPasswordForm(AweberSignupFullNameEmailForm, AweberSignupConfirmedPasswordFormMixin):
+    """ Ask the user for email and full name and password"""
+    def __init__(self, *args, **kwargs):
+        super(AweberSignupFullNameEmailConfirmedPasswordForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = [
+            'full_name',
+            'email1',
+            'password1',
+            'password2',
+        ]
+                
 class AweberSignupFullNameEmailPasswordSegmentForm(AweberSignupFullNameEmailPasswordForm, AweberFormWithSegmentMixin):
-    """ Ask the user for email and full name """
-    def clean(self):
-        def __init__(self, *args, **kwargs):
-            super(AweberSignupFullNameEmailPasswordForm, self).__init__(*args, **kwargs)
-            self.fields.keyOrder = [
-                'full_name',
-                'email1',
-                'password1',
-                'segment',
-            ]
+    """ Ask the user for email and full name, password and segment """
+    def __init__(self, *args, **kwargs):
+        super(AweberSignupFullNameEmailPasswordSegmentForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = [
+            'full_name',
+            'email1',
+            'password1',
+            'segment',
+        ]
 
-
-
+class AweberSignupFullNameEmailConfirmedPasswordSegmentForm(AweberSignupFullNameEmailConfirmedPasswordForm, AweberFormWithSegmentMixin):
+    """ Ask the user for email and full name, password(s) and segment """
+    def __init__(self, *args, **kwargs):
+        super(AweberSignupFullNameEmailConfirmedPasswordSegmentForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = [
+            'full_name',
+            'email1',
+            'password1',
+            'password2',
+            'segment',
+        ]
 
 
 

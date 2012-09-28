@@ -8,27 +8,27 @@ urlpatterns = patterns('',
         name='aweber_subscription_form_process'
     ),
 
-    url(r'^subscription/submit/$',
+    url(r'^submit/$',
         AweberSubscriptionFormAutoSubmitView.as_view(),
         name='aweber_subscription_form_auto_submit'
     ),
     
-    url(r'^subscription/thanks/$',
+    url(r'^thanks/$',
         AweberConfirmationSubscriptionCallbackView.as_view(),
         name='aweber_subscription_confirmation_callback'
     ),
 
-    url(r'^resubscription/thanks/$',
+    url(r'^thanks-again/$',
         AweberConfirmationResubscriptionCallbackView.as_view(),
         name='aweber_resubscription_reconfirmation_callback'
     ),
     
-    url(r'^subscription/confirmed/$',
+    url(r'^confirmed/$',
         AweberConfirmationSubscriptionLinkClickedView.as_view(),
         name='aweber_subscription_confirmation_link_clicked'
     ),
 
-    url(r'^subscription/complete/$',
+    url(r'^complete/$',
         AweberSubscriptionCompleteView.as_view(),
         name='aweber_subscription_complete'
     ),
