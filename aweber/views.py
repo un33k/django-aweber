@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.http import Http404
 from django.http import HttpResponseNotAllowed
-from forms import AweberSignupFullNameEmailConfirmedPasswordSegmentForm
+from forms import AweberSignupFullNameEmailPasswordSegmentForm
 from utils import get_aweber_params
 from utils import create_inactive_user
 from utils import is_email_valid
@@ -26,7 +26,7 @@ class AweberSubscriptionFormProcessView(
     
     """ This is where the aweber subscription happens """
     template_name = "aweber/aweber_subscription_form_process_view.html"
-    form_class = AweberSignupFullNameEmailConfirmedPasswordSegmentForm
+    form_class = AweberSignupFullNameEmailPasswordSegmentForm
     success_url = reverse_lazy('aweber_subscription_form_auto_submit')
     extra_context = {}
 
@@ -88,7 +88,7 @@ class AweberConfirmationSubscriptionCallbackView(
         context['name'] = form_data.get('name', '')
         context['email'] = form_data.get('email', '')
         context['segment'] = form_data.get('segment', '')
-        create_inactive_user(context['email'], context['name'])
+        create_inactive_user(context['email'], context['name'], form_data.get('password', ''))
         del self.request.session['aweber_subscription_form_data']
 
         return context
@@ -112,7 +112,7 @@ class AweberConfirmationResubscriptionCallbackView(
         context['name'] = form_data.get('name', '')
         context['email'] = form_data.get('email', '')
         context['segment'] = form_data.get('segment', '')
-        create_inactive_user(context['email'], context['name'])
+        create_inactive_user(context['email'], context['name'], form_data.get('password', ''))
         return context
 
 

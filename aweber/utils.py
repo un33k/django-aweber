@@ -72,14 +72,13 @@ def get_aweber_params(get_data):
     params_dict['first_name'], params_dict['last_name'] = get_first_last_from_name(params_dict['name'])
     return params_dict
 
-def create_inactive_user(email, name):
+def create_inactive_user(email, name, password):
     username = email.split('@')[0].strip()
     if does_username_exist(username) or len(username) < 3:
         username = get_unique_username()
-    new_user = User(username=username, email=email)
+    new_user = User.objects.create_user(username, email, password)
     new_user.first_name, new_user.last_name = get_first_last_from_name(name)
     new_user.is_active = False
-    new_user.set_unusable_password()
     new_user.save()
     return new_user
 
