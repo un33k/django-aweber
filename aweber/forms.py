@@ -10,7 +10,7 @@ import defaults
 
 class AweberSignupPasswordFormMixin(forms.Form):
     """ Ask user for password once """
-    password1 = forms.CharField(
+    password = forms.CharField(
                 label = _("Password"),
                 widget = forms.PasswordInput,
                 required = True,
@@ -18,12 +18,12 @@ class AweberSignupPasswordFormMixin(forms.Form):
                 help_text = _("Please choose a strong password. (minimum of %d characters)" % defaults.AWEBER_PASSWORD_MINIMUM_LENGHT)
     )
 
-    def clean_password1(self):
-        password1 = self.cleaned_data.get('password1', '')
-        if len(password1) < defaults.AWEBER_PASSWORD_MINIMUM_LENGHT:
+    def clean_password(self):
+        password = self.cleaned_data.get('password', '')
+        if len(password) < defaults.AWEBER_PASSWORD_MINIMUM_LENGHT:
             raise forms.ValidationError(_("Password too short! minimum length is ")+" [%d]" % defaults.AWEBER_PASSWORD_MINIMUM_LENGHT)
 
-        return password1
+        return password
 
 
 class AweberSignupConfirmedPasswordFormMixin(AweberSignupPasswordFormMixin):
@@ -31,7 +31,7 @@ class AweberSignupConfirmedPasswordFormMixin(AweberSignupPasswordFormMixin):
     def __init__(self, *args, **kwargs):
         super(AweberSignupConfirmedPasswordFormMixin, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
-            'password1',
+            'password',
             'password2',
         ]
         
@@ -45,10 +45,10 @@ class AweberSignupConfirmedPasswordFormMixin(AweberSignupPasswordFormMixin):
         
     def clean_password2(self):
         """ Confirm passwords are the same and not too short """
-        password1 = self.cleaned_data.get('password1', '')
+        password = self.cleaned_data.get('password', '')
         password2 = self.cleaned_data.get('password2', '')
-        if password1 and password2:
-            if password1 != password2:
+        if password and password2:
+            if password != password2:
                 raise forms.ValidationError(_("The two password fields didn't match."))
 
         return password2
@@ -56,28 +56,28 @@ class AweberSignupConfirmedPasswordFormMixin(AweberSignupPasswordFormMixin):
 
 class AweberSignupEmailFormMixin(forms.Form):
     """ Ask user for email once """
-    email1 = forms.EmailField(
+    email = forms.EmailField(
                 label = _("Email"),
                 max_length = 75,
                 required = True,
                 help_text = _("Please use a valid email address and avoid typos")
     )
 
-    def clean_email1(self):
+    def clean_email(self):
         """ Email should be unique """
-        email1 = self.cleaned_data.get('email1', '').lower()
+        email = self.cleaned_data.get('email', '').lower()
         verify = defaults.AWEBER_VERIFY_IF_EMAIL_EXISTS
         if verify:
             try:
                 from emailahoy import verify_email_address
             except:
                 raise ImproperlyConfigured('AWEBER_VERIFY_IF_EMAIL_EXISTS is set but python-emailahoy is not installed')
-            if not verify_email_address(email1):
+            if not verify_email_address(email):
                 raise forms.ValidationError(_("Email address rejected. Please use a REAL and working email address."))
                 
-        if User.objects.filter(email__iexact=email1):
+        if User.objects.filter(email__iexact=email):
             raise forms.ValidationError(_("This email address is already in use. Please supply a different email address."))
-        return email1
+        return email
 
 
 class AweberSignupConfirmedEmailFormMixin(AweberSignupEmailFormMixin):
@@ -85,7 +85,7 @@ class AweberSignupConfirmedEmailFormMixin(AweberSignupEmailFormMixin):
     def __init__(self, *args, **kwargs):
         super(AweberSignupConfirmedEmailFormMixin, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
-            'email1',
+            'email',
             'email2',
         ]
     
@@ -98,10 +98,10 @@ class AweberSignupConfirmedEmailFormMixin(AweberSignupEmailFormMixin):
 
     def clean_email2(self):
         """ Confirm emails are the same """
-        email1 = self.cleaned_data.get('email1', '').lower()
+        email = self.cleaned_data.get('email', '').lower()
         email2 = self.cleaned_data.get('email2', '').lower()
-        if email1 and email2:
-            if email1 != email2:
+        if email and email2:
+            if email != email2:
                 raise forms.ValidationError(_("The two email address fields didn't match."))
         return email2
 
@@ -159,7 +159,7 @@ class AweberSignupFullNameEmailForm(AweberSignupFullNameFormMixin, AweberSignupE
         super(AweberSignupFullNameEmailForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
             'full_name',
-            'email1',
+            'email',
         ]
 
 
@@ -169,8 +169,8 @@ class AweberSignupFullNameEmailPasswordForm(AweberSignupFullNameEmailForm, Awebe
         super(AweberSignupFullNameEmailPasswordForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
             'full_name',
-            'email1',
-            'password1',
+            'email',
+            'password',
         ]
 
 
@@ -180,8 +180,8 @@ class AweberSignupFullNameEmailConfirmedPasswordForm(AweberSignupFullNameEmailFo
         super(AweberSignupFullNameEmailConfirmedPasswordForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
             'full_name',
-            'email1',
-            'password1',
+            'email',
+            'password',
             'password2',
         ]
                 
@@ -191,8 +191,8 @@ class AweberSignupFullNameEmailPasswordSegmentForm(AweberSignupFullNameEmailPass
         super(AweberSignupFullNameEmailPasswordSegmentForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
             'full_name',
-            'email1',
-            'password1',
+            'email',
+            'password',
             'segment',
         ]
 
@@ -202,8 +202,8 @@ class AweberSignupFullNameEmailConfirmedPasswordSegmentForm(AweberSignupFullName
         super(AweberSignupFullNameEmailConfirmedPasswordSegmentForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
             'full_name',
-            'email1',
-            'password1',
+            'email',
+            'password',
             'password2',
             'segment',
         ]
