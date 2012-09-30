@@ -66,17 +66,18 @@ class AweberSignupEmailFormMixin(forms.Form):
     def clean_email(self):
         """ Email should be unique """
         email = self.cleaned_data.get('email', '').lower()
-        verify = defaults.AWEBER_VERIFY_IF_EMAIL_EXISTS
-        if verify:
+        
+        if User.objects.filter(email__iexact=email):
+            raise forms.ValidationError(_("This email address is already in use. Please supply a different email address."))
+        
+        if defaults.AWEBER_VERIFY_IF_EMAIL_EXISTS:
             try:
                 from emailahoy import verify_email_address
             except:
                 raise ImproperlyConfigured('AWEBER_VERIFY_IF_EMAIL_EXISTS is set but python-emailahoy is not installed')
             if not verify_email_address(email):
                 raise forms.ValidationError(_("Email address rejected. Please use a REAL and working email address."))
-                
-        if User.objects.filter(email__iexact=email):
-            raise forms.ValidationError(_("This email address is already in use. Please supply a different email address."))
+        
         return email
 
 
@@ -142,7 +143,7 @@ class AweberFormWithSegmentMixin(forms.Form):
     
     defaults.AWEBER_LIST_SEGMENT.insert(0, ('', '------------'))
     segment = forms.ChoiceField(
-                label = _('Account Type'), 
+                label = _('Subscription Type'), 
                 choices = defaults.AWEBER_LIST_SEGMENT,
                 required = True,
                 help_text = _("Please choose with care, as you cannot change this later!")
