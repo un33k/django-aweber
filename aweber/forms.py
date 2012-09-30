@@ -107,20 +107,20 @@ class AweberSignupConfirmedEmailFormMixin(AweberSignupEmailFormMixin):
         return email2
 
 
-class AweberSignupFullNameFormMixin(forms.Form):
+class AweberSignupNameFormMixin(forms.Form):
     """ Ask the user for full name """
 
-    full_name = forms.CharField(
+    name = forms.CharField(
                 label = _("Full name"), 
                 max_length=120, 
                 required=True,
                 help_text = _("Your first name + last name (surname) - e.g. John Smith.")
     )
 
-    def clean_full_name(self):
+    def clean_name(self):
         """ Ensure that the user gives first and last name """
-        full_name = self.cleaned_data.get('full_name', '').title()
-        names = full_name.split(' ')
+        name = self.cleaned_data.get('name', '').title()
+        names = name.split(' ')
         if len(names) == 1:
             raise forms.ValidationError(_("Please enter your full name"))
         elif len(names) == 2:
@@ -133,7 +133,7 @@ class AweberSignupFullNameFormMixin(forms.Form):
                 raise forms.ValidationError(_("Please enter your first name"))
             elif len(names[2]) < 2:
                 raise forms.ValidationError(_("Please enter your last name"))
-        return full_name
+        return name
 
 
 class AweberFormWithSegmentMixin(forms.Form):
@@ -154,55 +154,55 @@ class AweberFormWithSegmentMixin(forms.Form):
         return segment
         
 
-class AweberSignupFullNameEmailForm(AweberSignupFullNameFormMixin, AweberSignupEmailFormMixin):
+class AweberSignupNameEmailForm(AweberSignupNameFormMixin, AweberSignupEmailFormMixin):
     """ Ask the user for email and full name """
     def __init__(self, *args, **kwargs):
-        super(AweberSignupFullNameEmailForm, self).__init__(*args, **kwargs)
+        super(AweberSignupNameEmailForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
-            'full_name',
+            'name',
             'email',
         ]
 
 
-class AweberSignupFullNameEmailPasswordForm(AweberSignupFullNameEmailForm, AweberSignupPasswordFormMixin):
+class AweberSignupNameEmailPasswordForm(AweberSignupNameEmailForm, AweberSignupPasswordFormMixin):
     """ Ask the user for email and full name and password"""
     def __init__(self, *args, **kwargs):
-        super(AweberSignupFullNameEmailPasswordForm, self).__init__(*args, **kwargs)
+        super(AweberSignupNameEmailPasswordForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
-            'full_name',
+            'name',
             'email',
             'password',
         ]
 
 
-class AweberSignupFullNameEmailConfirmedPasswordForm(AweberSignupFullNameEmailForm, AweberSignupConfirmedPasswordFormMixin):
+class AweberSignupNameEmailConfirmedPasswordForm(AweberSignupNameEmailForm, AweberSignupConfirmedPasswordFormMixin):
     """ Ask the user for email and full name and password"""
     def __init__(self, *args, **kwargs):
-        super(AweberSignupFullNameEmailConfirmedPasswordForm, self).__init__(*args, **kwargs)
+        super(AweberSignupNameEmailConfirmedPasswordForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
-            'full_name',
+            'name',
             'email',
             'password',
             'password2',
         ]
                 
-class AweberSignupFullNameEmailPasswordSegmentForm(AweberSignupFullNameEmailPasswordForm, AweberFormWithSegmentMixin):
+class AweberSignupNameEmailPasswordSegmentForm(AweberSignupNameEmailPasswordForm, AweberFormWithSegmentMixin):
     """ Ask the user for email and full name, password and segment """
     def __init__(self, *args, **kwargs):
-        super(AweberSignupFullNameEmailPasswordSegmentForm, self).__init__(*args, **kwargs)
+        super(AweberSignupNameEmailPasswordSegmentForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
-            'full_name',
+            'name',
             'email',
             'password',
             'segment',
         ]
 
-class AweberSignupFullNameEmailConfirmedPasswordSegmentForm(AweberSignupFullNameEmailConfirmedPasswordForm, AweberFormWithSegmentMixin):
+class AweberSignupNameEmailConfirmedPasswordSegmentForm(AweberSignupNameEmailConfirmedPasswordForm, AweberFormWithSegmentMixin):
     """ Ask the user for email and full name, password(s) and segment """
     def __init__(self, *args, **kwargs):
-        super(AweberSignupFullNameEmailConfirmedPasswordSegmentForm, self).__init__(*args, **kwargs)
+        super(AweberSignupNameEmailConfirmedPasswordSegmentForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = [
-            'full_name',
+            'name',
             'email',
             'password',
             'password2',

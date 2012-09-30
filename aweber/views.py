@@ -13,12 +13,14 @@ from django.http import Http404
 from django.http import HttpResponseNotAllowed
 import logging
 
-from forms import AweberSignupFullNameEmailConfirmedPasswordSegmentForm
+from forms import AweberSignupNameEmailConfirmedPasswordSegmentForm
 from utils import get_aweber_params
 from utils import create_new_user
 from utils import is_email_valid
 from utils import encode_email
 from utils import get_user_by_email_or_none
+from utils import get_first_last_from_name
+
 import signals
 import defaults
 
@@ -30,7 +32,7 @@ class AweberSubscriptionFormProcessView(
 
     """ This is where the aweber subscription happens """
     template_name = "aweber/aweber_subscription_form_process_view.html"
-    form_class = AweberSignupFullNameEmailConfirmedPasswordSegmentForm
+    form_class = AweberSignupNameEmailConfirmedPasswordSegmentForm
     success_url = reverse_lazy('aweber_subscription_form_auto_submit')
     extra_context = {}
 
@@ -71,7 +73,7 @@ class AweberSubscriptionFormAutoSubmitView(
         context['list_name'] = defaults.AWEBER_LIST_NAME
         context['subscribed_callback'] = defaults.AWEBER_SUBSCRIBED_CALLBACK_URL
         context['already_subscribed_callback'] = defaults.AWEBER_ALREADY_SUBSCRIBED_CALLBACK_URL
-        context['name'] = form_data.get('full_name', '')
+        context['name'] = form_data.get('name', '')
         context['email'] = form_data.get('email', '')
         context['segment'] = form_data.get('segment', '')
         context['token'] = encode_email(context['email'])
@@ -181,8 +183,7 @@ class AweberSubscriptionCompleteView(
         context['email'] = aweber_data.get('email', '')
         context['token'] = aweber_data.get('custom token', '')
         context['name'] = aweber_data.get('name', '')
-        context['first_name'] = aweber_data.get('first_name', '')
-        context['last_name'] = aweber_data.get('last_name', '')
+        context['first_name'], context['last_name'] = get_first_last_from_name(context['name'])
         context['segment'] = aweber_data.get('meta_adtracking', '')
         context['new_user'] = get_user_by_email_or_none(context['email'])
         
