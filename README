@@ -3,6 +3,21 @@ django-aweber
 
 An Aweber based user-signup application for Django
 
-Work in progress ... DON'T USE YET!
+To use, installed the app.
 
+1. minimally set the following in your settings file.
 
+AWEBER_EMAIL_ENCODING_SALT = 'magic1234' # very important to have a unique string here
+AWEBER_LIST_NAME = 'name_of_your_aweber_list'
+AWEBER_SUBSCRIBED_CALLBACK_URL = 'http://example.com/signup/thanks/'
+AWEBER_ALREADY_SUBSCRIBED_CALLBACK_URL = 'http://example.com/signup/thanks-again/'
+
+2. Add aweber to your installed apps.
+
+3. You are done.
+
+Note: that this app currently works with double opt-in feature of Aweber.
+Aweber double opt-in is used to activate local django accounts.
+Killing two birds with one stone.
+
+More to come ... 
