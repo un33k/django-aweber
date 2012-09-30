@@ -14,6 +14,11 @@ AWEBER_ALREADY_SUBSCRIBED_CALLBACK_URL = 'http://example.com/signup/thanks-again
 
 2. Add aweber to your installed apps.
 
+3. Add aweber to your url
+# urlpatterns += patterns('', url(r'^signup/', include('aweber.urls')),)
+
+4. Create your templates
+
 3. You are done.
 
 Note: that this app currently works with double opt-in feature of Aweber.
