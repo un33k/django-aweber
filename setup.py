@@ -5,7 +5,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='django-aweber',
-    version='0.2',
+    version='0.3',
     description = "An Aweber based user-signup application for Django",
     long_description = read('README'),
     author='Val Neekman',

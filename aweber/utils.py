@@ -76,7 +76,10 @@ def get_first_last_from_name(name):
 
 def get_aweber_params(get_data):
     params_dict = dict(urlparse.parse_qsl(unquote(get_data.urlencode())))
-    params_dict['first_name'], params_dict['last_name'] = get_first_last_from_name(params_dict['name'])
+    try:
+        params_dict['first_name'], params_dict['last_name'] = get_first_last_from_name(params_dict['name'])
+    except:
+        pass
     return params_dict
 
 def create_new_user(email, name, password, is_active=False):

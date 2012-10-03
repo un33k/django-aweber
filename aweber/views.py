@@ -67,7 +67,7 @@ class AweberSubscriptionFormAutoSubmitView(
         try:
             form_data = self.request.session['aweber_subscription_form_data']
         except:
-            logger.error('Cannot locate aweber post data in session')
+            logger.error(_('Cannot locate aweber post data in session'))
             raise Http404
     
         context['list_name'] = defaults.AWEBER_LIST_NAME
@@ -99,7 +99,7 @@ class AweberConfirmationSubscriptionCallbackView(
         try:
             form_data = self.request.session['aweber_subscription_form_data']
         except:
-            logger.error('Cannot locate aweber post data in session')
+            logger.error(_('Cannot locate aweber post data in session'))
             raise Http404
 
         context['name'] = form_data.get('name', '')
@@ -132,7 +132,7 @@ class AweberConfirmationResubscriptionCallbackView(
         try:
             form_data = self.request.session['aweber_subscription_form_data']
         except:
-            logger.error('Cannot locate aweber post data in session')
+            logger.error(_('Cannot locate aweber post data in session'))
             raise Http404
 
         context['name'] = form_data.get('name', '')
@@ -177,7 +177,7 @@ class AweberSubscriptionCompleteView(
         try:
             aweber_data = self.request.session['aweber_data']
         except:
-            logger.error('Cannot locate aweber params in session')
+            logger.error(_('Cannot locate aweber params in session'))
             raise Http404
 
         context['email'] = aweber_data.get('email', '')
@@ -192,14 +192,21 @@ class AweberSubscriptionCompleteView(
     def get(self, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         
-        if not is_email_valid(context['email'], context['token']):
-            logger.error('Invalid token. Cannot trust the request')
-            raise Http404
+        try:
+            email = context['email']
+            new_user = context['new_user']
+            token = context['token']
+        except:
+            logger.error(_('Invalid aweber params'))
+            return HttpResponseRedirect(reverse_lazy('auth_login'))
+            
+        if not is_email_valid(email, token):
+            logger.error(_('Invalid token. Cannot trust the request'))
+            return HttpResponseRedirect(reverse_lazy('auth_login'))
     
-        new_user = context['new_user']
         if not new_user:
-            logger.error('Something went wrong. Cannot locate inactive user')
-            raise Http404
+            logger.error(_('Something went wrong. Cannot locate inactive user'))
+            return HttpResponseRedirect(reverse_lazy('auth_login'))
         
         if new_user.is_active:
             return HttpResponseRedirect(reverse_lazy('auth_login'))
